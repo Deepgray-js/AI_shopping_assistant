@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  ai-shopping-assistant:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-shopping-assistant
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - DASHSCOPE_API_KEY=${DASHSCOPE_API_KEY}
+    volumes:
+      # 如果需要持久化某些数据，可以在这里添加
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    labels:
+      - "com.ai-shopping-assistant.description=AI导购系统 - 朝夕拾画"
+      - "com.ai-shopping-assistant.version=1.0.0"
