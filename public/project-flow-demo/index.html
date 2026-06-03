@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>朝夕拾画AI导购系统 · 全流程信息流转演示</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <span class="eyebrow">Agentic Workflow Visualization</span>
+          <h1>朝夕拾画AI导购系统全流程信息流转演示</h1>
+          <p>
+            以单页交互式讲解方式，动态展示系统如何完成上下文理解与记忆、智能决策与工具调用，以及结果整合与多模态展示。
+          </p>
+        </div>
+        <div class="hero-badges">
+          <span>单页讲解</span>
+          <span>动态动画</span>
+          <span>节点跳转</span>
+          <span>桌面 / 平板适配</span>
+        </div>
+      </header>
+
+      <main class="experience-grid">
+        <aside class="timeline-panel card">
+          <div class="panel-heading">
+            <span class="panel-label">流程节点</span>
+            <h2>讲解导航</h2>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </aside>
+
+        <section class="story-panel card">
+          <div class="scenario-bar">
+            <div>
+              <span class="panel-label">示例数据</span>
+              <h2>业务案例切换</h2>
+            </div>
+            <div id="scenarioTabs" class="scenario-tabs"></div>
+          </div>
+
+          <div class="story-header">
+            <div>
+              <span id="progressPill" class="progress-pill"></span>
+              <h2 id="storyTitle"></h2>
+              <p id="storySummary"></p>
+            </div>
+            <div class="story-status">
+              <div class="status-ring">
+                <div id="statusRingFill" class="status-ring-fill"></div>
+              </div>
+              <span id="statusCaption"></span>
+            </div>
+          </div>
+
+          <div
+            id="stageCanvas"
+            class="stage-canvas"
+            role="button"
+            tabindex="0"
+            aria-label="点击舞台推进到下一个流程节点"
+            title="点击舞台可推进到下一个流程节点"
+          ></div>
+
+          <div class="business-panel">
+            <div class="business-block">
+              <h3>当前节点业务信息</h3>
+              <div id="businessInfoGrid" class="business-info-grid"></div>
+            </div>
+            <div class="business-block">
+              <h3>处理人配置与核心字段</h3>
+              <div id="ownerCard" class="owner-card"></div>
+              <ul id="fieldList" class="detail-list compact"></ul>
+            </div>
+          </div>
+
+          <div class="control-bar">
+            <div class="control-group">
+              <button id="prevBtn" class="control-btn secondary" type="button">上一步</button>
+              <button id="nextBtn" class="control-btn primary" type="button">点击推进到下一节点</button>
+              <button id="resetBtn" class="control-btn secondary" type="button">重置流程</button>
+            </div>
+            <div class="control-group">
+              <span id="nodeCounter" class="node-counter"></span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="detail-panel card">
+          <div class="panel-heading">
+            <span class="panel-label">扩展信息</span>
+            <h2>阶段详情</h2>
+          </div>
+
+          <div class="detail-block">
+            <h3>核心能力</h3>
+            <div id="capabilityTags" class="tag-list"></div>
+          </div>
+
+          <div class="detail-block">
+            <h3>技术细节</h3>
+            <ul id="techList" class="detail-list"></ul>
+          </div>
+
+          <div class="detail-block">
+            <h3>核心指标</h3>
+            <div id="metricsGrid" class="metrics-grid"></div>
+          </div>
+
+          <div class="detail-block">
+            <h3>应用场景</h3>
+            <ul id="scenarioList" class="detail-list"></ul>
+          </div>
+        </aside>
+      </main>
+
+      <div id="completionModal" class="completion-modal" aria-hidden="true">
+        <div class="completion-dialog">
+          <span class="panel-label">流程完成</span>
+          <h2 id="completionTitle">案例演示完成</h2>
+          <p id="completionSummary"></p>
+          <div class="control-group">
+            <button id="completionPrevScenarioBtn" class="control-btn secondary" type="button">切换下一个案例</button>
+            <button id="completionResetBtn" class="control-btn primary" type="button">重新演示当前案例</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
