@@ -185,6 +185,7 @@ docker inspect ai-shopping-assistant | grep -A 5 Env
 
 | Secret 名称 | 说明 | 示例 |
 |------------|------|------|
+| `ECS_HOST` | 你的阿里云 ECS 公网 IP | `47.96.xxx.xxx` |
 | `ECS_USER` | ECS 服务器的用户名 | `root` 或 `ubuntu` |
 | `ECS_PRIVATE_KEY` | SSH 私钥（用于连接 ECS） | 完整的 PEM 格式私钥 |
 | `ECS_PORT` | SSH 端口（可选，默认 22） | `22` |
@@ -210,24 +211,22 @@ docker inspect ai-shopping-assistant | grep -A 5 Env
 ### CI/CD 工作流说明
 
 每次推送到 `main` 分支时，会自动：
-1. 通过 SSH 连接到 ECS 服务器 (114.55.98.126)
-2. 拉取最新代码
-3. 安装依赖并构建项目
-4. 停止旧进程并启动新服务
+1. 构建 Docker 镜像
+2. 推送到 GitHub Container Registry (GHCR)
+3. 通过 SSH 连接到 ECS 服务器
+4. 拉取最新镜像并部署
 
 也可以在 GitHub Actions 页面手动触发部署。
 
 ### 首次在 ECS 上的准备（首次部署前）
 
-确保你的 ECS 服务器已安装 Node.js 20.x：
+确保你的 ECS 服务器已安装 Docker：
 ```bash
 # Ubuntu/Debian
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs
-
-# 验证安装
-node -v
-npm -v
+sudo apt update
+sudo apt install -y docker.io
+sudo usermod -aG docker $USER
+# 重新登录使权限生效
 ```
 
 ## 技术支持

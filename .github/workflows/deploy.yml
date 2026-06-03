@@ -18,10 +18,8 @@ jobs:
       - name: Sync Code to Aliyun ECS via SSH
         uses: easingthemes/ssh-deploy@v4
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.ECS_PRIVATE_KEY }}
           REMOTE_HOST: 114.55.98.126
-          REMOTE_USER: ${{ secrets.ECS_USER }}
-          REMOTE_PORT: ${{ secrets.ECS_PORT || 22 }}
+          REMOTE_USER: root
           SOURCE: "./"
           TARGET: "~/AI_shopping_assistant"
           ARGS: "-rlgoDzvc --delete --exclude='.git' --exclude='node_modules' --exclude='.next' --exclude='.env' --exclude='.github' --exclude='.env.local' --exclude='.env.development.local' --exclude='.env.test.local' --exclude='.env.production.local'"
