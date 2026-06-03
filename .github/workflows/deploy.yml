@@ -1,26 +1,21 @@
-name: Deploy to Aliyun ECS (Code Sync Only)
+name: Deploy to Aliyun ECS (Git Pull)
 
 on:
   push:
     branches: [main]
 
 jobs:
-  sync-code:
+  deploy:
     runs-on: ubuntu-latest
-    name: Sync Code to ECS
+    name: Deploy via SSH
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Execute deployment commands on ECS
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          fetch-depth: 0
-
-      - name: Sync Code to Aliyun ECS via SSH
-        uses: easingthemes/ssh-deploy@v4
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.ECS_PRIVATE_KEY }}
-          REMOTE_HOST: 114.55.98.126
-          REMOTE_USER: root
-          SOURCE: "./"
-          TARGET: "~/AI_shopping_assistant"
-          ARGS: "-rlgoDzvc --delete --exclude='.git' --exclude='node_modules' --exclude='.next' --exclude='.env' --exclude='.github' --exclude='.env.local' --exclude='.env.development.local' --exclude='.env.test.local' --exclude='.env.production.local'"
+          host: 114.55.98.126
+          username: root
+          key: ${{ secrets.ECS_PRIVATE_KEY }}
+          script: |
+            cd ~/AI_shopping_assistant
+            git pull origin main
