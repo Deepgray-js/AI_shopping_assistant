@@ -15,17 +15,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check Secret Presence
-        run: |
-          if [ -z "${{ secrets.ECS_PRIVATE_KEY }}" ]; then
-            echo "Error: ECS_PRIVATE_KEY is missing in GitHub Secrets!"
-            exit 1
-          fi
-
       - name: Sync Code to Aliyun ECS via SSH
         uses: easingthemes/ssh-deploy@v4
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.ECS_PRIVATE_KEY }}
           REMOTE_HOST: 114.55.98.126
           REMOTE_USER: root
           SOURCE: "./"
