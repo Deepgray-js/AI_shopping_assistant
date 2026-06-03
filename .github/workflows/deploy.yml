@@ -18,7 +18,7 @@ jobs:
       - name: Sync Code to Aliyun ECS via SSH
         uses: easingthemes/ssh-deploy@v4
         with:
-          SSH_PRIVATE_KEY: ${{ secrets.ECS_PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
           REMOTE_HOST: 114.55.98.126
           REMOTE_USER: root
           SOURCE: "./"
