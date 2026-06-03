@@ -175,6 +175,60 @@ docker inspect ai-shopping-assistant | grep -A 5 Env
 - 检查网络连通性（特别是是否有防火墙限制）
 - 查看阿里云 DashScope API 配额是否用尽
 
+## CI/CD 自动部署
+
+本项目支持通过 GitHub Actions 自动部署到阿里云 ECS。
+
+### 配置前准备
+
+在启用 CI/CD 之前，需要在 GitHub 仓库的 Settings > Secrets and Variables > Actions 中添加以下 Secrets：
+
+| Secret 名称 | 说明 | 示例 |
+|------------|------|------|
+| `ECS_HOST` | 你的阿里云 ECS 公网 IP | `47.96.xxx.xxx` |
+| `ECS_USER` | ECS 服务器的用户名 | `root` 或 `ubuntu` |
+| `ECS_PRIVATE_KEY` | SSH 私钥（用于连接 ECS） | 完整的 PEM 格式私钥 |
+| `ECS_PORT` | SSH 端口（可选，默认 22） | `22` |
+| `DASHSCOPE_API_KEY` | 阿里云 DashScope API Key | `sk-xxxxxxxxxx` |
+
+### 添加 ECS SSH 公钥
+
+1. 在你的本地电脑生成 SSH 密钥对（如果已有可跳过）：
+   ```bash
+   ssh-keygen -t ed25519 -C "your-email@example.com"
+   ```
+
+2. 将公钥添加到 ECS 服务器：
+   ```bash
+   # 查看公钥
+   cat ~/.ssh/id_ed25519.pub
+   
+   # 将公钥内容复制到 ECS 的 ~/.ssh/authorized_keys 文件中
+   ```
+
+3. 将私钥内容复制到 GitHub Secrets 的 `ECS_PRIVATE_KEY` 中。
+
+### CI/CD 工作流说明
+
+每次推送到 `main` 分支时，会自动：
+1. 构建 Docker 镜像
+2. 推送到 GitHub Container Registry (GHCR)
+3. 通过 SSH 连接到 ECS 服务器
+4. 拉取最新镜像并部署
+
+也可以在 GitHub Actions 页面手动触发部署。
+
+### 首次在 ECS 上的准备（首次部署前）
+
+确保你的 ECS 服务器已安装 Docker：
+```bash
+# Ubuntu/Debian
+sudo apt update
+sudo apt install -y docker.io
+sudo usermod -aG docker $USER
+# 重新登录使权限生效
+```
+
 ## 技术支持
 
 项目 GitHub: [https://github.com/Deepgray-js/AI_shopping_assistant](https://github.com/Deepgray-js/AI_shopping_assistant)

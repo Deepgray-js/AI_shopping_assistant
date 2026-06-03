@@ -1,0 +1,74 @@
+name: Deploy to Aliyun ECS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build and Deploy to ECS
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/ai-shopping-assistant:latest,ghcr.io/${{ github.repository_owner }}/ai-shopping-assistant:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Deploy to Aliyun ECS via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_PRIVATE_KEY }}
+          port: ${{ secrets.ECS_PORT || 22 }}
+          script: |
+            # 登录到 GHCR
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # 停止并删除旧容器
+            cd ~/AI_shopping_assistant || mkdir -p ~/AI_shopping_assistant
+            cd ~/AI_shopping_assistant
+            
+            # 停止旧容器（如果存在）
+            if docker ps -a | grep -q ai-shopping-assistant; then
+              docker stop ai-shopping-assistant
+              docker rm ai-shopping-assistant
+            fi
+            
+            # 拉取最新镜像
+            docker pull ghcr.io/${{ github.repository_owner }}/ai-shopping-assistant:latest
+            
+            # 启动新容器
+            docker run -d \
+              --name ai-shopping-assistant \
+              --restart unless-stopped \
+              -p 3000:3000 \
+              -e DASHSCOPE_API_KEY=${{ secrets.DASHSCOPE_API_KEY }} \
+              -e NODE_ENV=production \
+              ghcr.io/${{ github.repository_owner }}/ai-shopping-assistant:latest
+            
+            # 清理旧镜像
+            docker image prune -f
+            
+            # 检查容器是否正常运行
+            sleep 5
+            docker ps --filter name=ai-shopping-assistant
