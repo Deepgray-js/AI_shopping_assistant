@@ -211,12 +211,19 @@ docker inspect ai-shopping-assistant | grep -A 5 Env
 ### CI/CD 工作流说明
 
 每次推送到 `main` 分支时，会自动：
-1. 构建 Docker 镜像
-2. 推送到 GitHub Container Registry (GHCR)
-3. 通过 SSH 连接到 ECS 服务器
-4. 拉取最新镜像并部署
+1. 通过 SSH 连接到 ECS 服务器。
+2. 使用 `rsync` 将本地代码同步到服务器目标目录。
+3. 排除 `.git`, `node_modules`, `.next` 等不必要的文件夹。
 
-也可以在 GitHub Actions 页面手动触发部署。
+> 注意：此工作流仅同步代码，如需重新构建或重启服务，请手动连接服务器执行相应命令。
+
+### 故障排查：SSH 连接失败 (Rsync error 255)
+
+如果遇到 `Load key ...: error in libcrypto` 或 `Permission denied`，请检查：
+1. **私钥格式**：确保 `ECS_PRIVATE_KEY` 以 `-----BEGIN OPENSSH PRIVATE KEY-----` 开头。
+2. **末尾换行**：私钥最后一行结束后必须有一个回车（换行符）。
+3. **权限设置**：确保公钥已正确添加到服务器的 `~/.ssh/authorized_keys`。
+4. **Secret 名称**：确保 GitHub Secrets 中的名称与 `deploy.yml` 中的 `${{ secrets.ECS_PRIVATE_KEY }}` 完全一致。
 
 ### 首次在 ECS 上的准备（首次部署前）
 
